@@ -18,9 +18,9 @@ void MatchingMethod( int, void* );
 int MatchTemplate()
 {
     //img = imread("/home/sergey/Programs/projects/object_detect/object_detect/box_images/0.jpg", 1 );
-    img = imread("/home/sergey/Programs/projects/object_detect/object_detect/box_images/1.jpg", 1 );
+    //img = imread("/home/sergey/Programs/projects/object_detect/object_detect/box_images/1.jpg", 1 );
 
-    img = imread("/home/sergey/Programs/projects/object_detect/object_detect/box_images/5.jpg", 1 );
+    img = imread("/home/sergey/Programs/projects/object_detect/object_detect/box_images/8.jpg", 1 );
 
     templ = imread("/home/sergey/Programs/projects/object_detect/object_detect/results/00.jpg", 1 );
 
