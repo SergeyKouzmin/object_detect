@@ -3,6 +3,8 @@
 #include "opencv2/core/core.hpp"
 #include "opencv2/nonfree/features2d.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
+#include <fstream>
+#include "MatchTemplate.h"
 
 using namespace std;
 
@@ -43,15 +45,27 @@ int main() {
     std::vector<cv::Vec4i> hierarchy;
     std::vector<cv::Rect> boundRect( contours.size() );
 
-    for (int i = 24; i < 100; i++) {
+
+    std::ofstream positiveDatFile;
+    positiveDatFile.open("/home/sergey/Programs/projects/object_detect/object_detect/box_positives.dat");
+
+    std::ofstream positives_data;
+    positives_data.open("/home/sergey/Programs/projects/object_detect/object_detect/positives_data.dat");
+
+    for (int j = 0; j < 9; j++) {
         std::stringstream fileName;
-        fileName << "/home/sergey/Programs/projects/object_detect/object_detect/images/" << i << ".jpg";
+        //fileName << "/home/sergey/Programs/projects/object_detect/object_detect/images/" << j << ".jpg";
+        fileName << "/home/sergey/Programs/projects/object_detect/object_detect/box_images/" << j << ".jpg";
 
         cv::Mat image = cv::imread(fileName.str());
         cv::Mat image_gray;
 
         cv:cvtColor( image, image_gray, CV_BGR2GRAY );
         cv::threshold(image_gray, image_gray, 115, 255, CV_THRESH_BINARY);
+
+        std::stringstream grayImageFileName;
+        grayImageFileName << "/home/sergey/Programs/projects/object_detect/object_detect/images_gray/" << j << ".jpg";
+        cv::imwrite(grayImageFileName.str(), image_gray);
 
         cv::Canny( image_gray, canny_output, 30, 60, 3 );
         /// Find contours
@@ -65,22 +79,35 @@ int main() {
         boundRect[i] = cv::boundingRect( cv::Mat(contours_poly[i]) );
         }*/
 
-        cv::Mat drawing = cv::Mat::zeros( canny_output.size(), CV_8UC3 );
+        int count = 0;
+        std::stringstream rects;
         for( int i = 0; i< contours.size(); i++ ) {
             cv::Scalar color = cv::Scalar( 255, 0, 0);
             cv::Rect boundRect = cv::boundingRect( cv::Mat(contours[i]) );
             //cv::drawContours( drawing, contours, i, color, 2, 8, hierarchy, 0, cv::Point() );
             //cv::rectangle( drawing, boundRect[i].tl(), boundRect[i].br(), color, 2, 8, 0 );
             if (boundRect.area() > 4000) {
-                cv::rectangle(drawing, boundRect, color);
+                rects  << boundRect.x << " " << boundRect.y << " " << boundRect.width << " " << boundRect.height << " ";
+                count++;
+                cv::Mat objectRect = image(boundRect);
+                std::stringstream saveObject;
+                saveObject << "/home/sergey/Programs/projects/object_detect/object_detect/results/" << j << i << ".jpg";
+                cv::imwrite(saveObject.str(), objectRect);
+                positives_data << saveObject.str() << " 1 0 0 " << boundRect.width << " "<< boundRect.height << std::endl;
+                cv::rectangle(image, boundRect, color);
             }
         }
 
-        std::stringstream saveFrame;
-        saveFrame << "/home/sergey/Programs/projects/object_detect/object_detect/image_gray/" << i << ".jpg";
+        positiveDatFile << "/home/sergey/Programs/projects/object_detect/object_detect/" << j << ".jpg " << count << " " << rects.str() << std::endl;
 
-        cv::imwrite(saveFrame.str(), drawing);
+
+        std::stringstream saveFrame;
+        saveFrame << "/home/sergey/Programs/projects/object_detect/object_detect/data/" << j << ".jpg";
+
+        cv::imwrite(saveFrame.str(), image);
     }
+
+    MatchTemplate();
 
     return 0;
 
