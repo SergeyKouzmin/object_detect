@@ -61,11 +61,15 @@ int main() {
         cv::Mat image_gray;
 
         cv:cvtColor( image, image_gray, CV_BGR2GRAY );
-        cv::threshold(image_gray, image_gray, 115, 255, CV_THRESH_BINARY);
-
         std::stringstream grayImageFileName;
         grayImageFileName << "/home/sergey/Programs/projects/object_detect/object_detect/images_gray/" << j << ".jpg";
         cv::imwrite(grayImageFileName.str(), image_gray);
+
+        cv::threshold(image_gray, image_gray, 115, 255, CV_THRESH_BINARY);
+
+        /*std::stringstream grayImageFileName;
+        grayImageFileName << "/home/sergey/Programs/projects/object_detect/object_detect/images_gray/" << j << ".jpg";
+        cv::imwrite(grayImageFileName.str(), image_gray);*/
 
         cv::Canny( image_gray, canny_output, 30, 60, 3 );
         /// Find contours
@@ -98,7 +102,7 @@ int main() {
             }
         }
 
-        positiveDatFile << "/home/sergey/Programs/projects/object_detect/object_detect/" << j << ".jpg " << count << " " << rects.str() << std::endl;
+        positiveDatFile << "/home/sergey/Programs/projects/object_detect/object_detect/images_gray/" << j << ".jpg " << count << " " << rects.str() << std::endl;
 
 
         std::stringstream saveFrame;
@@ -107,7 +111,36 @@ int main() {
         cv::imwrite(saveFrame.str(), image);
     }
 
-    MatchTemplate();
+     //1
+
+    std::cout << "Test" << std::endl;
+
+    cv::Rect rects[] = {cv::Rect(126, 209, 206, 145),
+                        cv::Rect(121, 206, 233, 198),
+                        cv::Rect(144, 203, 216, 230),
+                        cv::Rect(139, 218, 167, 228),
+                        cv::Rect(109, 204, 220, 243),
+                        cv::Rect(108, 204, 237, 214),
+                        cv::Rect(121, 239, 214, 159),
+                        cv::Rect(123, 194, 230, 207),
+                        cv::Rect(172, 184, 182, 225)};
+
+    for (int i = 0; i < 9; i++) {
+        std::stringstream s1;
+        s1 << "/home/sergey/Programs/projects/object_detect/object_detect/images_gray/" << i << ".jpg";
+
+        cv::Mat testImage = cv::imread(s1.str());
+        //cv::Rect testRect(126, 209, 206, 145);
+
+        std::stringstream s2;
+        s2 << "/home/sergey/Programs/projects/object_detect/object_detect/test/" << i << ".jpg";
+        //cv::rectangle(testImage, testRect, cv::Scalar(0,255,0));
+        //cv::imwrite(s2.str(), testImage);
+        cv::imwrite(s2.str(), testImage(rects[i]));
+    }
+    std::cout << "Test end" << std::endl;
+
+    //MatchTemplate();
 
     return 0;
 
